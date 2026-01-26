@@ -8,6 +8,7 @@ requires = [
 
 [project]
 name = "mega-dlms"
+requires-python = "==3.10.*"
 dynamic = ["version"]
 description = "GPU-optimized codebase for training diffusion language models at any scale."
 readme = "README.md"
