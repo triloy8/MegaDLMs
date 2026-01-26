@@ -42,14 +42,6 @@ def export_jsonl(jsonl_dir: str) -> tuple[str, str]:
     return train_path, valid_path
 
 
-def ensure_special_tokens_txt(target_dir: str) -> None:
-    special_txt = os.path.join(target_dir, "special_tokens.txt")
-    if os.path.isfile(special_txt):
-        return
-    with open(special_txt, "w", encoding="utf-8") as f:
-        f.write("<|endoftext|>\n<|mdm_mask|>\n")
-
-
 def download_tokenizer_files(target_dir: str) -> tuple[str, str]:
     os.makedirs(target_dir, exist_ok=True)
     urls = {
@@ -69,8 +61,26 @@ def download_tokenizer_files(target_dir: str) -> tuple[str, str]:
 
     vocab_file = os.path.join(target_dir, "vocab_simplestories_8k.json")
     merge_file = os.path.join(target_dir, "merges_simplestories_8k.txt")
-    ensure_special_tokens_txt(target_dir)
     return vocab_file, merge_file
+
+
+def ensure_vocab_has_special_tokens(tokenizer_dir: str, vocab_file: str) -> None:
+    special_json = os.path.join(tokenizer_dir, "special_tokens_simplestories_8k.json")
+    if not os.path.isfile(special_json):
+        return
+    with open(vocab_file, "r", encoding="utf-8") as f:
+        vocab = json.load(f)
+    with open(special_json, "r", encoding="utf-8") as f:
+        special_tokens = json.load(f)
+    updated = False
+    for token, token_id in special_tokens.items():
+        if token in vocab and vocab[token] == token_id:
+            continue
+        vocab[token] = token_id
+        updated = True
+    if updated:
+        with open(vocab_file, "w", encoding="utf-8") as f:
+            json.dump(vocab, f, ensure_ascii=True)
 
 
 def run_preprocess(input_path: str, output_prefix: str, vocab_file: str, merge_file: str, workers: int) -> None:
@@ -121,8 +131,8 @@ def main() -> int:
 
     if not os.path.isfile(vocab_file) or not os.path.isfile(merge_file):
         vocab_file, merge_file = download_tokenizer_files(tokenizer_dir)
-    else:
-        ensure_special_tokens_txt(tokenizer_dir)
+
+    ensure_vocab_has_special_tokens(tokenizer_dir, vocab_file)
 
     if not os.path.isfile(vocab_file):
         raise SystemExit(
