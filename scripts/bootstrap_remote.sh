@@ -30,6 +30,30 @@ if ! command -v git >/dev/null 2>&1; then
     apt_install git
 fi
 
+if ! command -v pkg-config >/dev/null 2>&1; then
+    apt_install pkg-config
+fi
+
+if ! command -v cmake >/dev/null 2>&1; then
+    apt_install cmake
+fi
+
+if ! dpkg -s libcairo2-dev >/dev/null 2>&1; then
+    apt_install libcairo2-dev
+fi
+
+if ! dpkg -s libdbus-1-dev >/dev/null 2>&1; then
+    apt_install libdbus-1-dev
+fi
+
+if ! dpkg -s python3-dev >/dev/null 2>&1; then
+    apt_install python3-dev
+fi
+
+if ! command -v ninja >/dev/null 2>&1; then
+    apt_install ninja-build
+fi
+
 if ! command -v uv >/dev/null 2>&1; then
     curl -LsSf https://astral.sh/uv/install.sh | sh
     export PATH="${HOME}/.local/bin:${PATH}"
