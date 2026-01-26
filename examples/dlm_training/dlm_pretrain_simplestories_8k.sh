@@ -170,7 +170,6 @@ EVAL_AND_LOGGING_ARGS=(
     --ckpt-format torch
     --eval-interval $EVAL_INTERVAL
     --save $CHECKPOINT_PATH
-    --load $CHECKPOINT_PATH
     --eval-iters $VAL_ITERS
     --tensorboard-dir ${LOGS_PATH}/${RUN_NAME}/tensorboard
     --wandb-project dlm
