@@ -89,6 +89,7 @@ GPT_MODEL_ARGS=(
     --no-bias-gelu-fusion
     --no-bias-dropout-fusion
     --no-bias-swiglu-fusion
+    --no-masked-softmax-fusion
 
     --num-layers 12
     --hidden-size 512
