@@ -95,7 +95,7 @@ dependencies = [
     "pycocotools==2.0.11",
     "pygobject==3.48.2",
     "pyjwt==2.7.0",
-    "pylibwholegraph==24.10.0",
+    "pylibwholegraph-cu12==25.12.0",
     "pytest-flakefinder==1.1.0",
     "pytest-rerunfailures==14.0",
     "pytest-shard==0.1.2",
