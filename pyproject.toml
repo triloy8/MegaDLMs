@@ -108,7 +108,7 @@ dependencies = [
     "tensorboard==2.16.2",
     "tensorrt==10.6.0",
     "torch==2.4.*",
-    "torch-tensorrt==2.6.0a0",
+    "torch-tensorrt==2.6.0",
     "torchprofile==0.0.4",
     "transformer-engine==1.12.0+7f2afaa",
     "transformers==4.51.3",
