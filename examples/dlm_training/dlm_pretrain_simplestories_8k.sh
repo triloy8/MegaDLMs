@@ -53,10 +53,7 @@ if [ "$TRAIN_ITERS" -lt 1 ]; then
     TRAIN_ITERS=1
 fi
 
-SAVE_INTERVAL=$((TRAIN_ITERS / EPOCHS))
-if [ "$SAVE_INTERVAL" -lt 1 ]; then
-    SAVE_INTERVAL=1
-fi
+SAVE_INTERVAL=1000
 
 EVAL_INTERVAL=$SAVE_INTERVAL
 TARGET_VAL_TOKENS=100000
@@ -129,7 +126,7 @@ TRAINING_ARGS=(
     --lr 0.002
     --min-lr 0.0002
     --lr-decay-style WSD
-    --lr-warmup-iters 600
+    --lr-warmup-iters 200
     --lr-decay-iters $TRAIN_ITERS
     --lr-wsd-decay-style exponential
     --lr-wsd-decay-iters 100
