@@ -43,7 +43,7 @@ cd "$ROOT_DIR"
 SEQ_LENGTH=512
 GLOBAL_BATCH_SIZE=64
 MICRO_BATCH_SIZE=64
-TRAINING_TOKENS_PER_EPOCH=3276800000
+TRAINING_TOKENS_PER_EPOCH=6553600000
 EPOCHS=1
 
 TRAINING_TOKENS=$((TRAINING_TOKENS_PER_EPOCH * EPOCHS))
@@ -126,8 +126,8 @@ TRAINING_ARGS=(
     --init-method-std 0.02
     --clip-grad 1.0
     --bf16
-    --lr 0.0002
-    --min-lr 0.00002
+    --lr 0.002
+    --min-lr 0.0002
     --lr-decay-style WSD
     --lr-warmup-iters 200
     --lr-decay-iters $TRAIN_ITERS
