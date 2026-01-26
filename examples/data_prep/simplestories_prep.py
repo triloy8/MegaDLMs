@@ -14,7 +14,7 @@ def require_env(name: str) -> str:
     return value
 
 
-def export_jsonl(jsonl_dir: str) -> tuple[str, str]:
+def export_jsonl(jsonl_dir: str, force: bool) -> tuple[str, str]:
     from datasets import load_dataset
 
     train_path = os.path.join(jsonl_dir, "simplestories_train.jsonl")
@@ -23,7 +23,7 @@ def export_jsonl(jsonl_dir: str) -> tuple[str, str]:
     ds = load_dataset("SimpleStories/SimpleStories")
 
     def dump(split: str, out_path: str) -> None:
-        if os.path.isfile(out_path):
+        if os.path.isfile(out_path) and not force:
             print(f"Found existing JSONL for {split}: {out_path}")
             return
         print(f"Writing {split} JSONL to {out_path}")
@@ -32,7 +32,7 @@ def export_jsonl(jsonl_dir: str) -> tuple[str, str]:
             for row in ds[split]:
                 story = row.get("story")
                 if story:
-                    f.write('{"text": ' + repr(story) + "}\n")
+                    f.write(json.dumps({"text": story}, ensure_ascii=True) + "\n")
                     count += 1
                     if count % 100000 == 0:
                         print(f"{split}: wrote {count} rows")
@@ -118,6 +118,11 @@ def main() -> int:
         help="Download tokenizer files into PROJECT_DIR/data if missing.",
     )
     parser.add_argument("--workers", type=int, default=8, help="Tokenizer workers.")
+    parser.add_argument(
+        "--force-jsonl",
+        action="store_true",
+        help="Rebuild JSONL files even if they already exist.",
+    )
     args = parser.parse_args()
 
     project_dir = require_env("PROJECT_DIR")
@@ -146,7 +151,7 @@ def main() -> int:
             "Run with --download-tokenizer or place the file there."
         )
 
-    train_jsonl, valid_jsonl = export_jsonl(jsonl_dir)
+    train_jsonl, valid_jsonl = export_jsonl(jsonl_dir, args.force_jsonl)
 
     run_preprocess(
         train_jsonl,
