@@ -49,7 +49,6 @@ classifiers = [
 ]
 dependencies = [
     "aiohttp==3.10.10",
-    "apex==0.1",
     "black==24.10.0",
     "blinker==1.7.0",
     "cmake==3.31.0.1",
