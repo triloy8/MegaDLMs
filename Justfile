@@ -3,9 +3,6 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 prime_host := env_var_or_default("PRIME_HOST", "prime-node")
 remote_root := env_var_or_default("REMOTE_ROOT", "~/MegaDLMs")
 
-download-data:
-	ssh {{prime_host}} "cd {{remote_root}} && bash scripts/download_simplestories_data.sh"
-
 bootstrap-remote:
 	ssh {{prime_host}} 'bash -s' < scripts/bootstrap_remote.sh
 

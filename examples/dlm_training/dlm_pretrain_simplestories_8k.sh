@@ -81,6 +81,7 @@ mkdir -p "$CHECKPOINT_PATH"
 GPT_MODEL_ARGS=(
     --seq-length $SEQ_LENGTH
     --attention-backend flash
+    --core-attn-implementation TEDotProductAttention
     --attention-softmax-in-fp32
     --attention-dropout 0.0
     --hidden-dropout 0.0
