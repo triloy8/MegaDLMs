@@ -10,7 +10,7 @@ data-remote:
 	ssh {{prime_host}} "cd {{remote_root}} && bash scripts/download_simplestories_data.sh"
 
 train script="examples/dlm_training/dlm_pretrain_simplestories_8k.sh":
-	ssh {{prime_host}} "cd {{remote_root}} && export PATH=\"\\$HOME/.local/bin:\\$PATH\" && uv run -- bash scripts/run_train_remote.sh {{script}}"
+	ssh {{prime_host}} "cd {{remote_root}} && bash scripts/run_train_remote.sh {{script}}"
 
 attach-train:
 	ssh -t {{prime_host}} 'tmux attach -t megadlms-train'
