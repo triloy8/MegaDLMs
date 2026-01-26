@@ -52,6 +52,7 @@ dependencies = [
     "setuptools<80.0.0,>=77.0.0",
     "packaging>=24.2",
     "megatron-core[mlm,lts]",
+    "pandas==2.2.3",
 ]
 
 
