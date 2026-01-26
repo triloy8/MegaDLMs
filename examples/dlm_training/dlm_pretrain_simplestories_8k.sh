@@ -126,8 +126,8 @@ TRAINING_ARGS=(
     --init-method-std 0.02
     --clip-grad 1.0
     --bf16
-    --lr 0.001
-    --min-lr 0.0001
+    --lr 0.0005
+    --min-lr 0.00005
     --lr-decay-style WSD
     --lr-warmup-iters 200
     --lr-decay-iters $TRAIN_ITERS
