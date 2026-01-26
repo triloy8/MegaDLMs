@@ -179,6 +179,7 @@ EVAL_AND_LOGGING_ARGS=(
     --wandb-tags 'dlm'
     --wandb-notes 'training'
     --wandb-resume allow
+    --no-one-logger
 )
 
 torchrun ${DISTRIBUTED_ARGS[@]} pretrain_difflm.py \
