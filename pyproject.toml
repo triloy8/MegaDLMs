@@ -92,7 +92,7 @@ dependencies = [
     "pulp==2.9.0",
     "pybind11==2.13.6",
     "pybind11-global==2.13.6",
-    "pycocotools==2.0+nv0.8.1",
+    "pycocotools==2.0.11",
     "pygobject==3.48.2",
     "pyjwt==2.7.0",
     "pylibwholegraph==24.10.0",
