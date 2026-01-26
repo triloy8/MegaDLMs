@@ -53,6 +53,8 @@ dependencies = [
     "packaging>=24.2",
     "megatron-core[mlm,lts]",
     "pandas==2.2.3",
+    "pybind11==2.13.6",
+    "transformer-engine[pytorch]",
 ]
 
 

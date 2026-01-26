@@ -46,6 +46,10 @@ if ! dpkg -s libdbus-1-dev >/dev/null 2>&1; then
     apt_install libdbus-1-dev
 fi
 
+if ! dpkg -s libcudnn8-dev >/dev/null 2>&1; then
+    apt_install libcudnn8-dev
+fi
+
 if ! dpkg -s python3-dev >/dev/null 2>&1; then
     apt_install python3-dev
 fi
