@@ -167,9 +167,7 @@ EVAL_AND_LOGGING_ARGS=(
     --non-persistent-save-interval $((TRAIN_ITERS * 2))
     --non-persistent-ckpt-type global
     --non-persistent-global-ckpt-dir $CHECKPOINT_PATH/non_persistent
-    --ckpt-format torch_dist
-    --auto-detect-ckpt-format
-    --ckpt-fully-parallel-load
+    --ckpt-format torch
     --eval-interval $EVAL_INTERVAL
     --save $CHECKPOINT_PATH
     --load $CHECKPOINT_PATH
@@ -177,7 +175,6 @@ EVAL_AND_LOGGING_ARGS=(
     --tensorboard-dir ${LOGS_PATH}/${RUN_NAME}/tensorboard
     --wandb-project dlm
     --wandb-exp-name $RUN_NAME
-    --wandb-run-id $RUN_NAME
     --wandb-save-dir ${LOGS_PATH}/${RUN_NAME}/wandb
     --wandb-mode $WANDB_MODE
     --wandb-tags 'dlm'
