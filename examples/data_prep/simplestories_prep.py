@@ -22,23 +22,40 @@ def export_jsonl(jsonl_dir: str) -> tuple[str, str]:
     ds = load_dataset("SimpleStories/SimpleStories")
 
     def dump(split: str, out_path: str) -> None:
+        if os.path.isfile(out_path):
+            print(f"Found existing JSONL for {split}: {out_path}")
+            return
+        print(f"Writing {split} JSONL to {out_path}")
+        count = 0
         with open(out_path, "w", encoding="utf-8") as f:
             for row in ds[split]:
                 story = row.get("story")
                 if story:
                     f.write('{"text": ' + repr(story) + "}\n")
+                    count += 1
+                    if count % 100000 == 0:
+                        print(f"{split}: wrote {count} rows")
+                        f.flush()
 
     dump("train", train_path)
     dump("test", valid_path)
     return train_path, valid_path
 
 
+def ensure_special_tokens_txt(target_dir: str) -> None:
+    special_txt = os.path.join(target_dir, "special_tokens.txt")
+    if os.path.isfile(special_txt):
+        return
+    with open(special_txt, "w", encoding="utf-8") as f:
+        f.write("<|endoftext|>\n<|mdm_mask|>\n")
+
+
 def download_tokenizer_files(target_dir: str) -> tuple[str, str]:
     os.makedirs(target_dir, exist_ok=True)
     urls = {
-        "merges_simplestories_8k.txt": "https://huggingface.co/trixyL/diffusionLM/resolve/main/merges_simplestories_8k.txt",
-        "vocab_simplestories_8k.json": "https://huggingface.co/trixyL/diffusionLM/resolve/main/vocab_simplestories_8k.json",
-        "special_tokens_simplestories_8k.json": "https://huggingface.co/trixyL/diffusionLM/resolve/main/special_tokens_simplestories_8k.json",
+        "merges_simplestories_8k.txt": "https://huggingface.co/datasets/trixyL/simplestories-8k-megatron/resolve/main/merges_simplestories_8k.txt",
+        "vocab_simplestories_8k.json": "https://huggingface.co/datasets/trixyL/simplestories-8k-megatron/resolve/main/vocab_simplestories_8k.json",
+        "special_tokens_simplestories_8k.json": "https://huggingface.co/datasets/trixyL/simplestories-8k-megatron/resolve/main/special_tokens_simplestories_8k.json",
     }
 
     for filename, url in urls.items():
@@ -52,6 +69,7 @@ def download_tokenizer_files(target_dir: str) -> tuple[str, str]:
 
     vocab_file = os.path.join(target_dir, "vocab_simplestories_8k.json")
     merge_file = os.path.join(target_dir, "merges_simplestories_8k.txt")
+    ensure_special_tokens_txt(target_dir)
     return vocab_file, merge_file
 
 
@@ -103,6 +121,8 @@ def main() -> int:
 
     if not os.path.isfile(vocab_file) or not os.path.isfile(merge_file):
         vocab_file, merge_file = download_tokenizer_files(tokenizer_dir)
+    else:
+        ensure_special_tokens_txt(tokenizer_dir)
 
     if not os.path.isfile(vocab_file):
         raise SystemExit(
