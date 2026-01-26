@@ -110,7 +110,7 @@ dependencies = [
     "torch==2.4.*",
     "torch-tensorrt==2.4.0",
     "torchprofile==0.0.4",
-    "transformer-engine==1.12.0+7f2afaa",
+    "transformer-engine==1.12.0",
     "transformers==4.51.3",
     "types-dataclasses==0.6.6",
     "uri-template==1.3.0",
