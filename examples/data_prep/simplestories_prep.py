@@ -101,7 +101,7 @@ def main() -> int:
     vocab_file = os.path.join(tokenizer_dir, "vocab_simplestories_8k.json")
     merge_file = os.path.join(tokenizer_dir, "merges_simplestories_8k.txt")
 
-    if args.download_tokenizer and (not os.path.isfile(vocab_file) or not os.path.isfile(merge_file)):
+    if not os.path.isfile(vocab_file) or not os.path.isfile(merge_file):
         vocab_file, merge_file = download_tokenizer_files(tokenizer_dir)
 
     if not os.path.isfile(vocab_file):
