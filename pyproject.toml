@@ -130,6 +130,7 @@ explicit = true
 
 [tool.uv.extra-build-dependencies]
 flash-attn = ["torch"]
+nvidia-pyindex = ["pip"]
 
 [project.urls]
 Download = "https://github.com/JinjieNi/MegaDLMs/releases"
