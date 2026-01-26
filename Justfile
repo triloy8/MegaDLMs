@@ -20,7 +20,6 @@ nvitop:
 
 sync-env:
 	if [ ! -f env/.env ]; then echo "Missing env/.env" >&2; exit 1; fi
-	source env/.env
 	ssh {{prime_host}} "mkdir -p {{remote_root}}/env"
 	scp env/.env {{prime_host}}:{{remote_root}}/env/.env
 
