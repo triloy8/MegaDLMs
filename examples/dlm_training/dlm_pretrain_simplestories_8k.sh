@@ -7,10 +7,10 @@ nvidia-smi || true
 export CUDA_DEVICE_MAX_CONNECTIONS=1
 export TORCH_NCCL_HEARTBEAT_TIMEOUT_SEC=3600
 
-: "${PROJECT_DIR:?Set PROJECT_DIR in envs/.env}"
-: "${DATASETS_DIR:?Set DATASETS_DIR in envs/.env}"
-: "${CKPT_DIR:?Set CKPT_DIR in envs/.env}"
-: "${LOG_DIR:?Set LOG_DIR in envs/.env}"
+: "${PROJECT_DIR:?Set PROJECT_DIR in env/.env}"
+: "${DATASETS_DIR:?Set DATASETS_DIR in env/.env}"
+: "${CKPT_DIR:?Set CKPT_DIR in env/.env}"
+: "${LOG_DIR:?Set LOG_DIR in env/.env}"
 
 GPUS_PER_NODE=${GPUS_PER_NODE:-1}
 NUM_NODES=${NUM_NODES:-1}
