@@ -116,6 +116,7 @@ PLMT_ARGS=(
 TRAINING_ARGS=(
     --micro-batch-size $MICRO_BATCH_SIZE
     --global-batch-size $GLOBAL_BATCH_SIZE
+    --no-gradient-accumulation-fusion
     --train-iters $TRAIN_ITERS
     --weight-decay 0.1
     --adam-beta1 0.9
