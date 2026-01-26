@@ -74,7 +74,7 @@ mkdir -p "${repo_root}/data" "${repo_root}/runs" "${repo_root}/env"
     cd "${repo_root}"
     if command -v uv >/dev/null 2>&1; then
         uv venv
-        uv pip install -r requirements.txt
+        uv sync
     fi
 )
 
