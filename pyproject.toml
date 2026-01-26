@@ -52,7 +52,7 @@ dependencies = [
     "black==24.10.0",
     "blinker==1.7.0",
     "cmake==3.31.0.1",
-    "cudf-polars==24.10.0",
+    "cudf-polars-cu12==25.12.0",
     "cugraph-dgl==24.10.0",
     "cugraph-equivariant==24.10.0",
     "cugraph-pyg==24.10.0",
