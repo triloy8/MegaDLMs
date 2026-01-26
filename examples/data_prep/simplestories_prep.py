@@ -3,6 +3,7 @@ import argparse
 import os
 import subprocess
 import sys
+from urllib.request import urlretrieve
 
 
 def require_env(name: str) -> str:
@@ -30,6 +31,28 @@ def export_jsonl(jsonl_dir: str) -> tuple[str, str]:
     dump("train", train_path)
     dump("test", valid_path)
     return train_path, valid_path
+
+
+def download_tokenizer_files(target_dir: str) -> tuple[str, str]:
+    os.makedirs(target_dir, exist_ok=True)
+    urls = {
+        "merges_simplestories_8k.txt": "https://huggingface.co/trixyL/diffusionLM/resolve/main/merges_simplestories_8k.txt",
+        "vocab_simplestories_8k.json": "https://huggingface.co/trixyL/diffusionLM/resolve/main/vocab_simplestories_8k.json",
+        "special_tokens_simplestories_8k.json": "https://huggingface.co/trixyL/diffusionLM/resolve/main/special_tokens_simplestories_8k.json",
+    }
+
+    for filename, url in urls.items():
+        dest = os.path.join(target_dir, filename)
+        if os.path.isfile(dest):
+            continue
+        tmp_dest = f"{dest}.tmp"
+        print(f"Downloading {url}")
+        urlretrieve(url, tmp_dest)
+        os.replace(tmp_dest, dest)
+
+    vocab_file = os.path.join(target_dir, "vocab_simplestories_8k.json")
+    merge_file = os.path.join(target_dir, "merges_simplestories_8k.txt")
+    return vocab_file, merge_file
 
 
 def run_preprocess(input_path: str, output_prefix: str, vocab_file: str, merge_file: str, workers: int) -> None:
@@ -60,6 +83,11 @@ def main() -> int:
         default=None,
         help="Directory to write JSONL files. Defaults to DATASETS_DIR.",
     )
+    parser.add_argument(
+        "--download-tokenizer",
+        action="store_true",
+        help="Download tokenizer files into PROJECT_DIR/data if missing.",
+    )
     parser.add_argument("--workers", type=int, default=8, help="Tokenizer workers.")
     args = parser.parse_args()
 
@@ -69,12 +97,23 @@ def main() -> int:
     jsonl_dir = args.jsonl_dir or datasets_dir
     os.makedirs(jsonl_dir, exist_ok=True)
 
-    vocab_file = os.path.join(project_dir, "data", "vocab_simplestories_8k.json")
-    merge_file = os.path.join(project_dir, "data", "merges_simplestories_8k.txt")
+    tokenizer_dir = os.path.join(project_dir, "data")
+    vocab_file = os.path.join(tokenizer_dir, "vocab_simplestories_8k.json")
+    merge_file = os.path.join(tokenizer_dir, "merges_simplestories_8k.txt")
+
+    if args.download_tokenizer and (not os.path.isfile(vocab_file) or not os.path.isfile(merge_file)):
+        vocab_file, merge_file = download_tokenizer_files(tokenizer_dir)
+
     if not os.path.isfile(vocab_file):
-        raise SystemExit(f"Missing tokenizer vocab: {vocab_file}")
+        raise SystemExit(
+            f"Missing tokenizer vocab: {vocab_file}. "
+            "Run with --download-tokenizer or place the file there."
+        )
     if not os.path.isfile(merge_file):
-        raise SystemExit(f"Missing tokenizer merges: {merge_file}")
+        raise SystemExit(
+            f"Missing tokenizer merges: {merge_file}. "
+            "Run with --download-tokenizer or place the file there."
+        )
 
     train_jsonl, valid_jsonl = export_jsonl(jsonl_dir)
 
