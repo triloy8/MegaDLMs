@@ -41,6 +41,7 @@ def _resolve_run_name(base: str, lr: float) -> str:
 
 
 def main() -> None:
+    os.environ.setdefault("CUDA_DEVICE_MAX_CONNECTIONS", "1")
     parser = argparse.ArgumentParser(description="W&B sweep launcher for DLM pretraining.")
     parser.add_argument("--lr", type=float, default=None, help="Learning rate to sweep.")
     args, _unknown = parser.parse_known_args()
