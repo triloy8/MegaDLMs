@@ -12,6 +12,7 @@ if [ ! -f env/.env ]; then
 	echo "Missing env/.env; run \`just sync-env\` first" >&2
 	exit 1
 fi
+source env/.env
 
 read_env_value() {
 	local var_name="$1"
@@ -52,5 +53,5 @@ if tmux has-session -t "${SESSION}" 2>/dev/null; then
 	tmux kill-session -t "${SESSION}"
 fi
 
-tmux new -d -s "${SESSION}" "bash -lc 'export WANDB_API_KEY=${WANDB_API_KEY}; ${AGENT_CMD}'"
+tmux new -d -s "${SESSION}" "bash -lc 'set -a; source env/.env; set +a; export WANDB_API_KEY=${WANDB_API_KEY}; ${AGENT_CMD}'"
 echo "Started tmux session ${SESSION}"
