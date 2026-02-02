@@ -78,7 +78,7 @@ def main() -> None:
     seq_length = 512
     global_batch_size = 96
     micro_batch_size = 96
-    training_tokens_per_epoch = 4_9152_000
+    training_tokens_per_epoch = 98_304_000
     epochs = 1
 
     training_tokens = training_tokens_per_epoch * epochs
@@ -211,7 +211,7 @@ def main() -> None:
         "--lr-wsd-decay-style",
         "exponential",
         "--lr-wsd-decay-iters",
-        "100",
+        "0",
         "--use-distributed-optimizer",
         "--num-distributed-optimizer-instances",
         str(num_nodes),
