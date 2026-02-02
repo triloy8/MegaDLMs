@@ -1,0 +1,16 @@
+program: scripts/sweep_difflm.py
+project: dlm-sweep
+method: bayes
+metric:
+  goal: minimize
+  name: lm loss validation
+command:
+  - ${env}
+  - python
+  - ${program}
+  - ${args}
+parameters:
+  lr:
+    distribution: log_uniform_values
+    min: 0.0001
+    max: 0.01
