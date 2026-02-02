@@ -78,7 +78,7 @@ def main() -> None:
     seq_length = 512
     global_batch_size = 96
     micro_batch_size = 96
-    training_tokens_per_epoch = 6_553_600_000
+    training_tokens_per_epoch = 4_9152_000
     epochs = 1
 
     training_tokens = training_tokens_per_epoch * epochs
