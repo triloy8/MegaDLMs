@@ -7,6 +7,7 @@ CONFIG="${1:-${CONFIG:-examples/dlm_training/dlm_pretrain_simplestories_8k_sweep
 EXTRA_ARGS="${2:-${EXTRA_ARGS:-}}"
 
 export PATH="${HOME}/.local/bin:${PATH}"
+ROOT_DIR="$(pwd)"
 
 if [ ! -f env/.env ]; then
 	echo "Missing env/.env; run \`just sync-env\` first" >&2
@@ -53,5 +54,5 @@ if tmux has-session -t "${SESSION}" 2>/dev/null; then
 	tmux kill-session -t "${SESSION}"
 fi
 
-tmux new -d -s "${SESSION}" "bash -lc 'set -a; source env/.env; set +a; export WANDB_API_KEY=${WANDB_API_KEY}; ${AGENT_CMD}'"
+tmux new -d -s "${SESSION}" "bash -lc 'cd \"${ROOT_DIR}\"; set -a; source env/.env; set +a; export WANDB_API_KEY=${WANDB_API_KEY}; ${AGENT_CMD}'"
 echo "Started tmux session ${SESSION}"
