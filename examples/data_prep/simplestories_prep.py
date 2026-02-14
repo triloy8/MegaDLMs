@@ -7,6 +7,11 @@ import sys
 from urllib.request import urlretrieve
 
 
+DEFAULT_TOKENIZER_REPO = "trixyL/simplestories-4k-megatron"
+DEFAULT_TOKENIZER_PREFIX = "simplestories_4k"
+DEFAULT_TEXT_DATASET = "SimpleStories/SimpleStories"
+
+
 def require_env(name: str) -> str:
     value = os.environ.get(name)
     if not value:
@@ -14,13 +19,13 @@ def require_env(name: str) -> str:
     return value
 
 
-def export_jsonl(jsonl_dir: str, force: bool) -> tuple[str, str]:
+def export_jsonl(jsonl_dir: str, force: bool, dataset_name: str) -> tuple[str, str]:
     from datasets import load_dataset
 
     train_path = os.path.join(jsonl_dir, "simplestories_train.jsonl")
     valid_path = os.path.join(jsonl_dir, "simplestories_test.jsonl")
 
-    ds = load_dataset("SimpleStories/SimpleStories")
+    ds = load_dataset(dataset_name)
 
     def dump(split: str, out_path: str) -> None:
         if os.path.isfile(out_path) and not force:
@@ -43,12 +48,17 @@ def export_jsonl(jsonl_dir: str, force: bool) -> tuple[str, str]:
     return train_path, valid_path
 
 
-def download_tokenizer_files(target_dir: str) -> tuple[str, str]:
+def download_tokenizer_files(
+    target_dir: str, tokenizer_repo: str, tokenizer_prefix: str
+) -> tuple[str, str]:
     os.makedirs(target_dir, exist_ok=True)
+    base_url = f"https://huggingface.co/datasets/{tokenizer_repo}/resolve/main"
     urls = {
-        "merges_simplestories_8k.txt": "https://huggingface.co/datasets/trixyL/simplestories-8k-megatron/resolve/main/merges_simplestories_8k.txt",
-        "vocab_simplestories_8k.json": "https://huggingface.co/datasets/trixyL/simplestories-8k-megatron/resolve/main/vocab_simplestories_8k.json",
-        "special_tokens_simplestories_8k.json": "https://huggingface.co/datasets/trixyL/simplestories-8k-megatron/resolve/main/special_tokens_simplestories_8k.json",
+        f"merges_{tokenizer_prefix}.txt": f"{base_url}/merges_{tokenizer_prefix}.txt",
+        f"vocab_{tokenizer_prefix}.json": f"{base_url}/vocab_{tokenizer_prefix}.json",
+        f"special_tokens_{tokenizer_prefix}.json": (
+            f"{base_url}/special_tokens_{tokenizer_prefix}.json"
+        ),
     }
 
     for filename, url in urls.items():
@@ -60,13 +70,15 @@ def download_tokenizer_files(target_dir: str) -> tuple[str, str]:
         urlretrieve(url, tmp_dest)
         os.replace(tmp_dest, dest)
 
-    vocab_file = os.path.join(target_dir, "vocab_simplestories_8k.json")
-    merge_file = os.path.join(target_dir, "merges_simplestories_8k.txt")
+    vocab_file = os.path.join(target_dir, f"vocab_{tokenizer_prefix}.json")
+    merge_file = os.path.join(target_dir, f"merges_{tokenizer_prefix}.txt")
     return vocab_file, merge_file
 
 
-def ensure_vocab_has_special_tokens(tokenizer_dir: str, vocab_file: str) -> None:
-    special_json = os.path.join(tokenizer_dir, "special_tokens_simplestories_8k.json")
+def ensure_vocab_has_special_tokens(
+    tokenizer_dir: str, tokenizer_prefix: str, vocab_file: str
+) -> None:
+    special_json = os.path.join(tokenizer_dir, f"special_tokens_{tokenizer_prefix}.json")
     if not os.path.isfile(special_json):
         return
     with open(vocab_file, "r", encoding="utf-8") as f:
@@ -117,6 +129,30 @@ def main() -> int:
         action="store_true",
         help="Download tokenizer files into PROJECT_DIR/data if missing.",
     )
+    parser.add_argument(
+        "--tokenizer-repo",
+        default=DEFAULT_TOKENIZER_REPO,
+        help=(
+            "Hugging Face dataset repo containing tokenizer files "
+            "(example: trixyL/simplestories-4k-megatron)."
+        ),
+    )
+    parser.add_argument(
+        "--tokenizer-prefix",
+        default=DEFAULT_TOKENIZER_PREFIX,
+        help=(
+            "Tokenizer filename suffix used in merges/vocab/special_tokens files "
+            "(example: simplestories_4k)."
+        ),
+    )
+    parser.add_argument(
+        "--text-dataset",
+        default=DEFAULT_TEXT_DATASET,
+        help=(
+            "Dataset ID used to export train/test JSONL text "
+            "(example: SimpleStories/SimpleStories)."
+        ),
+    )
     parser.add_argument("--workers", type=int, default=8, help="Tokenizer workers.")
     parser.add_argument(
         "--force-jsonl",
@@ -132,13 +168,20 @@ def main() -> int:
     os.makedirs(jsonl_dir, exist_ok=True)
 
     tokenizer_dir = os.path.join(project_dir, "data")
-    vocab_file = os.path.join(tokenizer_dir, "vocab_simplestories_8k.json")
-    merge_file = os.path.join(tokenizer_dir, "merges_simplestories_8k.txt")
+    vocab_file = os.path.join(tokenizer_dir, f"vocab_{args.tokenizer_prefix}.json")
+    merge_file = os.path.join(tokenizer_dir, f"merges_{args.tokenizer_prefix}.txt")
 
     if not os.path.isfile(vocab_file) or not os.path.isfile(merge_file):
-        vocab_file, merge_file = download_tokenizer_files(tokenizer_dir)
+        if not args.download_tokenizer:
+            raise SystemExit(
+                "Tokenizer files are missing. Re-run with --download-tokenizer "
+                "or place vocab/merges in PROJECT_DIR/data."
+            )
+        vocab_file, merge_file = download_tokenizer_files(
+            tokenizer_dir, args.tokenizer_repo, args.tokenizer_prefix
+        )
 
-    ensure_vocab_has_special_tokens(tokenizer_dir, vocab_file)
+    ensure_vocab_has_special_tokens(tokenizer_dir, args.tokenizer_prefix, vocab_file)
 
     if not os.path.isfile(vocab_file):
         raise SystemExit(
@@ -151,7 +194,9 @@ def main() -> int:
             "Run with --download-tokenizer or place the file there."
         )
 
-    train_jsonl, valid_jsonl = export_jsonl(jsonl_dir, args.force_jsonl)
+    train_jsonl, valid_jsonl = export_jsonl(
+        jsonl_dir, args.force_jsonl, args.text_dataset
+    )
 
     run_preprocess(
         train_jsonl,

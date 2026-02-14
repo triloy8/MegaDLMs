@@ -13,7 +13,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Upload Megatron bin/idx files to HF.")
     parser.add_argument(
         "--repo-id",
-        default="trixyL/simplestories-8k-megatron",
+        default="trixyL/simplestories-4k-megatron",
         help="Hugging Face dataset repo (e.g., user/name).",
     )
     parser.add_argument(
@@ -25,6 +25,16 @@ def main() -> int:
         "--create",
         action="store_true",
         help="Create repo if it does not exist.",
+    )
+    parser.add_argument(
+        "--include-tokenizer",
+        action="store_true",
+        help="Also upload merges/vocab/special_tokens tokenizer files.",
+    )
+    parser.add_argument(
+        "--tokenizer-prefix",
+        default="simplestories_4k",
+        help="Tokenizer filename suffix (e.g., simplestories_4k).",
     )
     args = parser.parse_args()
 
@@ -39,6 +49,14 @@ def main() -> int:
         "simplestories_test_text_document.bin",
         "simplestories_test_text_document.idx",
     ]
+    if args.include_tokenizer:
+        files.extend(
+            [
+                f"merges_{args.tokenizer_prefix}.txt",
+                f"vocab_{args.tokenizer_prefix}.json",
+                f"special_tokens_{args.tokenizer_prefix}.json",
+            ]
+        )
     paths = [os.path.join(args.data_dir, f) for f in files]
     for path in paths:
         require_file(path)
